@@ -19,7 +19,7 @@ Prerequisites: [Theos](https://theos.dev/)
 1. Clone this repository ``git clone https://github.com/YuzuZensai/iOS-DiscordPresence.git``
 2. Edit ``Makefile`` if needed
 3. Run ``make do`` to build and install on your device, or ``make package`` to build
-4. After installing the tweak, create a new file ``/var/mobile/Documents/DiscordToken.txt`` and put your Discord token there
+4. After installing the tweak, create a new file ``/var/mobile/Documents/DiscordToken.txt`` and put your Discord token there (This is temporary for now, will change to a better way later)
 
 ## ⚠️ Disclaimer
 
