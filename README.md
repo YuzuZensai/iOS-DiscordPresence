@@ -4,12 +4,13 @@ Jailbreak tweak that implements Discord Playing Presence like Samsung Game Launc
 This is my first jailbreak tweak <3, so it might not be perfect
 
 ![Preview](https://user-images.githubusercontent.com/84713269/167249578-41f97c06-756c-4610-a94e-2a259a9171fb.gif)
+![Preference](https://user-images.githubusercontent.com/84713269/167431755-adcc770f-9dd8-4e57-83e8-7e697e6f28da.png)
 
 ## 📃 TODOs
 
 - [X] Make preference menu, and some basic settings
 - [ ] Make the tweak send ``UPDATE`` request every x interval, to keep the status active
-- [ ] ~~Better way storing the token (Preference?)~~ (Done) / Fetching the discord token (Somehow hooking the Discord app too? No idea yet)
+- [ ] Fetching the discord token (Somehow hooking the Discord app? No idea yet)
 - [ ] Make rate limits to prevent spamming the API
 
 ## 🔧 Installation
