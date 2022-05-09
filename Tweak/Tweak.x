@@ -8,6 +8,26 @@ SBApplication* focusedApplication = nil;
 NSString* lastKnownBundleIdentifier = nil;
 Boolean isDeviceLocked = true;
 
+// Rate limit
+float requestRate = 4.0;
+float requestPer = 25.0;
+
+float requestAllowance = 0;
+CFTimeInterval requestLastCheck;
+
+static void showDiscordRatelimitAlert() {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+        [dict setObject: @"iOS-DiscordPresence" forKey: (__bridge NSString*)kCFUserNotificationAlertHeaderKey];
+        [dict setObject: @"⚠️ Hey, slow down! ⚠️\n\nDiscord has rate-limited you\n\nContinuing to spam requests to discord can be considered API abuse, which may result in your discord account being suspended\n\nIf you did nothing and got rate-limited by Discord, it is possible that your IP address is blocked from their server or you are using multiple devices that are updating the presence or something is triggering the tweak to send the request too many time\n\nYou can disable the tweak for a while and try again later" forKey: (__bridge NSString*)kCFUserNotificationAlertMessageKey];
+        [dict setObject: @"Close" forKey:(__bridge NSString*)kCFUserNotificationDefaultButtonTitleKey];
+
+        SInt32 error = 0;
+        CFUserNotificationRef alert = CFUserNotificationCreate(NULL, 0, kCFUserNotificationPlainAlertLevel, &error, (__bridge CFDictionaryRef)dict);
+        CFRelease(alert);
+    });
+}
+
 %hook SpringBoard
 
 -(void)frontDisplayDidChange:(id)arg1 {
@@ -78,7 +98,28 @@ Boolean isDeviceLocked = true;
 
     if(![arg1 isKindOfClass:[%c(SBApplication) class]] && arg1 != nil) return;
 
+    
     if(!isEnabled) return;
+
+    //Rate limit check
+    CFTimeInterval now = CACurrentMediaTime();
+    CFTimeInterval timePassed = now - requestLastCheck;
+    requestLastCheck = now;
+
+    requestAllowance += timePassed * (requestRate / requestPer);
+    
+    NSLog(@"Request allowance: %f", requestAllowance);
+
+    if(requestAllowance > requestRate)
+        requestAllowance = requestRate;
+
+    if(requestAllowance < 1.0) {
+        NSLog(@"Request not sent, rate limted");
+        return;
+    }
+
+    else
+        requestAllowance -= 1.0;
 
     NSString *accessToken = @"";
 
@@ -145,6 +186,12 @@ Boolean isDeviceLocked = true;
         {
             NSLog(@"Request sent to Discord successfully");
         }
+        else if (httpResponse.statusCode == 429) {
+            NSLog(@"Request rate limited, applying rate limit");
+            requestLastCheck = CACurrentMediaTime();
+            requestAllowance = 0;
+            showDiscordRatelimitAlert();
+        }
         else
         {
             NSLog(@"Error from discord, Status Code: %ld", (long)httpResponse.statusCode);     
@@ -202,6 +249,8 @@ static void loadPreferences()
 
 %ctor 
 {
+    requestAllowance = requestRate;
+    requestLastCheck = CACurrentMediaTime();
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPreferences, CFSTR("pink.kirameki.yuzu.iosdiscordpresencepreferences/PreferencesChanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
     loadPreferences();
 }
