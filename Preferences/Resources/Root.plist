@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSStaticTextCell</string>
+			<key>height</key>
+			<integer>150</integer>
+			<key>label</key>
+			<string></string>
+			<key>icon</key>
+			<string>banner.png</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>General</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>pink.kirameki.yuzu.iosdiscordpresencepreferences</string>
+			<key>key</key>
+			<string>isEnabled</string>
+			<key>label</key>
+			<string>Enabled</string>
+			<key>PostNotification</key>
+			<string>pink.kirameki.yuzu.iosdiscordpresencepreferences/PreferencesChanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSecureEditTextCell</string>
+			<key>defaults</key>
+			<string>pink.kirameki.yuzu.iosdiscordpresencepreferences</string>
+			<key>key</key>
+			<string>discordToken</string>
+            <key>label</key>
+			<string>Discord Token</string>
+			<key>placeholder</key>
+			<string>Put your discord token here</string>
+			<key>PostNotification</key>
+			<string>pink.kirameki.yuzu.iosdiscordpresencepreferences/PreferencesChanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Information</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>GitHub</string>
+			<key>action</key>
+			<string>openGitHubLink</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string>iOS-DiscordPresence</string>
+</dict>
+</plist>
