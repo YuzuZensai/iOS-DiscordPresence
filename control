@@ -6,4 +6,4 @@ Description: Jailbreak tweak that implements Discord Playing Presence like Samsu
 Maintainer: YuzuZensai
 Author: YuzuZensai
 Section: Tweaks
-Depends: mobilesubstrate (>= 0.9.5000)
+Depends: mobilesubstrate, preferenceloader

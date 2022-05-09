@@ -1,5 +1,9 @@
 #import <Tweak.h>
 
+// Variable to store value from preferences
+Boolean isEnabled = false;
+NSString* discordToken = nil;
+
 SBApplication* focusedApplication = nil;
 NSString* lastKnownBundleIdentifier = nil;
 Boolean isDeviceLocked = true;
@@ -9,6 +13,7 @@ Boolean isDeviceLocked = true;
 -(void)frontDisplayDidChange:(id)arg1 {
 
     %orig;
+
     // Switched to SpringBoard
     if(arg1 == nil) {
         // If switched from SpringBoard to SpringBoard, ignore
@@ -72,18 +77,13 @@ Boolean isDeviceLocked = true;
 -(void)updateDiscordPresence:(id)arg1 withState:(NSString *)state {
 
     if(![arg1 isKindOfClass:[%c(SBApplication) class]] && arg1 != nil) return;
+
+    if(!isEnabled) return;
+
     NSString *accessToken = @"";
 
-    // TODO: Make settings preferences or somehow fetch Discord token from the app?
-    // Load discord token from text file at /var/mobile/Documents/DiscordToken.txt
-    NSString* content = [NSString
-        stringWithContentsOfFile: @"/var/mobile/Documents/DiscordToken.txt"
-        encoding:NSUTF8StringEncoding
-        error:NULL
-    ];
-
-    if(content != nil)
-        accessToken = content;
+    if(discordToken != nil)
+        accessToken = discordToken;
 
     // If SBApplication is passed
     if(arg1 != nil) {
@@ -159,6 +159,7 @@ Boolean isDeviceLocked = true;
 -(void)_authenticationStateChanged:(id)arg1 {
 
     %orig;
+
     // Get the state changed notification, and find the SBFUserAuthenticationStateWasAuthenticatedKey value
     NSConcreteNotification *notification = arg1;
     int state = [[[notification userInfo] objectForKey: @"SBFUserAuthenticationStateWasAuthenticatedKey"] integerValue];
@@ -170,6 +171,7 @@ Boolean isDeviceLocked = true;
 -(void)_sendUILockStateChangedNotification {
 
     %orig;
+
     // The phone is locked or focused application is nil, ignore
     if(isDeviceLocked || focusedApplication == nil) return;
     // If the phone is unlocked, then the user is peeking at the notification or didn't swipe up to unlock yet.
@@ -184,3 +186,22 @@ Boolean isDeviceLocked = true;
     }
 }
 %end
+
+static void loadPreferences()
+{
+    NSString *preferencesPath = @"/var/mobile/Library/Preferences/pink.kirameki.yuzu.iosdiscordpresencepreferences.plist";
+    NSMutableDictionary *preferences = [[NSMutableDictionary alloc] initWithContentsOfFile: preferencesPath];
+    if(preferences)
+    {
+        NSLog(@"Updating preferences"); 
+
+        isEnabled = ( [preferences objectForKey:@"isEnabled"] ? [[preferences objectForKey:@"isEnabled"] boolValue] : isEnabled );
+        discordToken = ( [preferences objectForKey:@"discordToken"] ? [preferences objectForKey:@"discordToken"] : discordToken );
+    }
+}
+
+%ctor 
+{
+    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPreferences, CFSTR("pink.kirameki.yuzu.iosdiscordpresencepreferences/PreferencesChanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+    loadPreferences();
+}
