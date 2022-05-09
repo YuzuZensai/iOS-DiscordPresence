@@ -1,6 +1,6 @@
 #import <Tweak.h>
 
-// Variable to store value from preferences
+// Variables to store value from preferences
 Boolean isEnabled = false;
 NSString* discordToken = nil;
 
@@ -8,14 +8,14 @@ SBApplication* focusedApplication = nil;
 NSString* lastKnownBundleIdentifier = nil;
 Boolean isDeviceLocked = true;
 
-// Rate limit
-float requestRate = 4.0;
-float requestPer = 25.0;
-
-float requestAllowance = 0;
-CFTimeInterval requestLastCheck;
+// Rate-limit of Discord API requests
+float requestRate = 4.0; // Requests
+float requestPer = 25.0; // Seconds
+float requestAllowance = 0; //The bucket, Initialized with 0
+CFTimeInterval requestLastCheck; // Last time when the request was checked
 
 static void showDiscordRatelimitAlert() {
+    // Dispatch the alert after 1 seconds, to prevent it being closed automatically if user interacted with something it might think that user trying to dismiss the alert
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         NSMutableDictionary* dict = [NSMutableDictionary dictionary];
         [dict setObject: @"iOS-DiscordPresence" forKey: (__bridge NSString*)kCFUserNotificationAlertHeaderKey];
@@ -28,119 +28,15 @@ static void showDiscordRatelimitAlert() {
     });
 }
 
-%hook SpringBoard
-
--(void)frontDisplayDidChange:(id)arg1 {
-
-    %orig;
-
-    // Switched to SpringBoard
-    if(arg1 == nil) {
-        // If switched from SpringBoard to SpringBoard, ignore
-        if(focusedApplication == arg1) return;
-
-        // User is not in any application, clear the presence
-        focusedApplication = nil;
-        [self updateDiscordPresence:focusedApplication withState:@"STOP"];
-        
-        return;
-    }
-
-    // Switched to Application
-    else if ([arg1 isKindOfClass:[%c(SBApplication) class]]) {
-        SBApplication *app = arg1;
-
-        Boolean isSystemApplication = [app isSystemApplication];
-        Boolean isGameApplication = [self isSBApplicationAGame:app];
-
-        // Switched to itself, ignore
-        if (focusedApplication == app) return;
-
-        // Ignore if the application is system application or is not a game
-        if(isSystemApplication || !isGameApplication) {
-            // Remove any focused application, since the user switched to non game or system application
-            if(focusedApplication != nil) {
-                // Remove current focused application and stop the presence
-                focusedApplication = nil;
-                [self updateDiscordPresence:focusedApplication withState:@"STOP"];
-            }
-            return;
-        }
-
-        // Didn't switched from one application to another, start new presence
-        if(focusedApplication == nil) {
-            focusedApplication = app;
-            [self updateDiscordPresence:focusedApplication withState:@"START"];
-        }
-
-        // Switched from one application to another, update the presence
-        else {
-            focusedApplication = app;
-            [self updateDiscordPresence:focusedApplication withState:@"UPDATE"];
-        }
-
-        return;
-    }
-}
-
-%new
-- (bool)isSBApplicationAGame:(SBApplication *)app {
+static Boolean isSBApplicationAGame(SBApplication* app) {
     SBApplicationInfo *appInfo = [app info];
     NSArray *category = [appInfo iTunesCategoriesOrderedByRelevancy];
-    //NSString *categoryStr = [category componentsJoinedByString:@", "];
-
+   
     // Does application contains "Games" category?
     return [category containsObject:@"Games"];
 }
 
-%new
--(void)updateDiscordPresence:(id)arg1 withState:(NSString *)state {
-
-    if(![arg1 isKindOfClass:[%c(SBApplication) class]] && arg1 != nil) return;
-
-    
-    if(!isEnabled) return;
-
-    //Rate limit check
-    CFTimeInterval now = CACurrentMediaTime();
-    CFTimeInterval timePassed = now - requestLastCheck;
-    requestLastCheck = now;
-
-    requestAllowance += timePassed * (requestRate / requestPer);
-    
-    NSLog(@"Request allowance: %f", requestAllowance);
-
-    if(requestAllowance > requestRate)
-        requestAllowance = requestRate;
-
-    if(requestAllowance < 1.0) {
-        NSLog(@"Request not sent, rate limted");
-        return;
-    }
-
-    else
-        requestAllowance -= 1.0;
-
-    NSString *accessToken = @"";
-
-    if(discordToken != nil)
-        accessToken = discordToken;
-
-    // If SBApplication is passed
-    if(arg1 != nil) {
-        SBApplication *app = (SBApplication *)arg1;
-        [self sendRequestToDiscord:accessToken withBundleIdentifier:[app bundleIdentifier] withState:state];
-    }
-    // No SBApplication passed, only STOP should be sent
-    else {
-        if(![state isEqualToString: @"STOP"]) return;
-        [self sendRequestToDiscord:accessToken withBundleIdentifier:nil withState:state];
-    }
-}
-
-%new
--(void)sendRequestToDiscord:(NSString *)accessToken withBundleIdentifier:(NSString *)bundleIdentifier withState:(NSString *)state {
-
+static void sendRequestToDiscord(NSString *accessToken, NSString *bundleIdentifier, NSString *state) {
     // Discord API Presences endpoint
     NSMutableURLRequest *urlRequest = [[NSMutableURLRequest alloc]
         initWithURL:[NSURL URLWithString:@"https://discord.com/api/v6/presences"]
@@ -199,6 +95,105 @@ static void showDiscordRatelimitAlert() {
     }];
     [dataTask resume];
 }
+
+static void updateDiscordPresence(id arg1, NSString *state) {
+
+    if(![arg1 isKindOfClass:[%c(SBApplication) class]] && arg1 != nil) return;
+
+    
+    if(!isEnabled) return;
+
+    //Rate limit check
+    CFTimeInterval now = CACurrentMediaTime();
+    CFTimeInterval timePassed = now - requestLastCheck;
+    requestLastCheck = now;
+
+    requestAllowance += timePassed * (requestRate / requestPer);
+    
+    NSLog(@"Request allowance: %f", requestAllowance);
+
+    if(requestAllowance > requestRate)
+        requestAllowance = requestRate;
+
+    if(requestAllowance < 1.0) {
+        NSLog(@"Request not sent, rate limted");
+        return;
+    }
+
+    else
+        requestAllowance -= 1.0;
+
+    NSString *accessToken = @"";
+
+    if(discordToken != nil)
+        accessToken = discordToken;
+
+    // If SBApplication is passed
+    if(arg1 != nil) {
+        SBApplication *app = (SBApplication *)arg1;
+        sendRequestToDiscord(accessToken, [app bundleIdentifier], state);
+    }
+    // No SBApplication passed, only STOP should be sent
+    else {
+        if(![state isEqualToString: @"STOP"]) return;
+        sendRequestToDiscord(accessToken, nil, state);
+    }
+}
+
+%hook SpringBoard
+
+-(void)frontDisplayDidChange:(id)arg1 {
+
+    %orig;
+
+    // Switched to SpringBoard
+    if(arg1 == nil) {
+        // If switched from SpringBoard to SpringBoard, ignore
+        if(focusedApplication == arg1) return;
+
+        // User is not in any application, clear the presence
+        focusedApplication = nil;
+        updateDiscordPresence(focusedApplication, @"STOP");
+        
+        return;
+    }
+
+    // Switched to Application
+    else if ([arg1 isKindOfClass:[%c(SBApplication) class]]) {
+        SBApplication *app = arg1;
+
+        Boolean isSystemApplication = [app isSystemApplication];
+        Boolean isGameApplication = isSBApplicationAGame(app);
+
+        // Switched to itself, ignore
+        if (focusedApplication == app) return;
+
+        // Ignore if the application is system application or is not a game
+        if(isSystemApplication || !isGameApplication) {
+            // Remove any focused application, since the user switched to non game or system application
+            if(focusedApplication != nil) {
+                // Remove current focused application and stop the presence
+                focusedApplication = nil;
+                updateDiscordPresence(focusedApplication, @"STOP");
+            }
+            return;
+        }
+
+        // Didn't switched from one application to another, start new presence
+        if(focusedApplication == nil) {
+            focusedApplication = app;
+            updateDiscordPresence(focusedApplication, @"START");
+        }
+
+        // Switched from one application to another, update the presence
+        else {
+            focusedApplication = app;
+            updateDiscordPresence(focusedApplication, @"UPDATE");
+        }
+
+        return;
+    }
+}
 %end
 
 %hook SBLockScreenManager
@@ -229,7 +224,7 @@ static void showDiscordRatelimitAlert() {
     if(isOnLockScreen) {
         // Remove current focused application and stop the presence
         focusedApplication = nil;
-        [[%c(SpringBoard) sharedApplication] updateDiscordPresence:focusedApplication withState:@"STOP"];
+        updateDiscordPresence(focusedApplication, @"STOP");
     }
 }
 %end

@@ -1,4 +1,5 @@
 # 🎮 iOS-DiscordPresence
+
 Jailbreak tweak that implements Discord Playing Presence like Samsung Game Launcher. [How does this tweak work?](https://github.com/YuzuZensai/DiscordMobilePlayingCLI)
 
 This is my first jailbreak tweak <3, so it might not be perfect
