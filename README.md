@@ -11,7 +11,7 @@ This is my first jailbreak tweak <3, so it might not be perfect
 - [X] Make preference menu, and some basic settings
 - [ ] Make the tweak send ``UPDATE`` request every x interval, to keep the status active
 - [ ] Fetching the discord token (Somehow hooking the Discord app? No idea yet)
-- [ ] Make rate limits to prevent spamming the API
+- [X] Make rate limits to prevent spamming the API
 
 ## 🔧 Installation
 
