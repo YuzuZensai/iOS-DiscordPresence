@@ -14,6 +14,8 @@ float requestPer = 25.0; // Seconds
 float requestAllowance = 0; //The bucket, Initialized with 0
 CFTimeInterval requestLastCheck; // Last time when the request was checked
 
+dispatch_source_t discordUpdatePresenceTimer;
+
 static void showDiscordRatelimitAlert() {
     // Dispatch the alert after 1 seconds, to prevent it being closed automatically if user interacted with something it might think that user trying to dismiss the alert
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -140,6 +142,34 @@ static void updateDiscordPresence(id arg1, NSString *state) {
     }
 }
 
+static void initDiscordUpdatePresenceTimer() {
+    discordUpdatePresenceTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)); 
+
+    double interval = 5 * 60; // 5 minutes
+    dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, 0);
+    uint64_t intervalTime = (int64_t)(interval * NSEC_PER_SEC);
+    dispatch_source_set_timer(discordUpdatePresenceTimer, startTime, intervalTime, 0);
+
+    dispatch_source_set_event_handler(discordUpdatePresenceTimer, ^{
+        if(focusedApplication != nil)
+            updateDiscordPresence(focusedApplication, @"UPDATE");
+    });
+}
+
+static void startDiscordUpdatePresenceTimer() {
+    if(discordUpdatePresenceTimer != nil)
+        dispatch_resume(discordUpdatePresenceTimer);
+    else {
+        initDiscordUpdatePresenceTimer();
+        dispatch_resume(discordUpdatePresenceTimer);
+    }
+}
+
+static void stopDiscordUpdatePresenceTimer() {
+    if(discordUpdatePresenceTimer != nil)
+        dispatch_suspend(discordUpdatePresenceTimer);
+}
+
 %hook SpringBoard
 
 -(void)frontDisplayDidChange:(id)arg1 {
@@ -154,6 +184,9 @@ static void updateDiscordPresence(id arg1, NSString *state) {
         // User is not in any application, clear the presence
         focusedApplication = nil;
         updateDiscordPresence(focusedApplication, @"STOP");
+
+        // Stop Discord update presence timer
+        stopDiscordUpdatePresenceTimer();
         
         return;
     }
@@ -175,6 +208,9 @@ static void updateDiscordPresence(id arg1, NSString *state) {
                 // Remove current focused application and stop the presence
                 focusedApplication = nil;
                 updateDiscordPresence(focusedApplication, @"STOP");
+
+                // Stop Discord update presence timer
+                stopDiscordUpdatePresenceTimer();
             }
             return;
         }
@@ -183,6 +219,9 @@ static void updateDiscordPresence(id arg1, NSString *state) {
         if(focusedApplication == nil) {
             focusedApplication = app;
             updateDiscordPresence(focusedApplication, @"START");
+
+            // Start Discord update presence timer
+            startDiscordUpdatePresenceTimer();
         }
 
         // Switched from one application to another, update the presence
@@ -225,6 +264,9 @@ static void updateDiscordPresence(id arg1, NSString *state) {
         // Remove current focused application and stop the presence
         focusedApplication = nil;
         updateDiscordPresence(focusedApplication, @"STOP");
+
+        // Stop Discord update presence timer
+        stopDiscordUpdatePresenceTimer();
     }
 }
 %end
@@ -248,4 +290,5 @@ static void loadPreferences()
     requestLastCheck = CACurrentMediaTime();
     CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPreferences, CFSTR("pink.kirameki.yuzu.iosdiscordpresencepreferences/PreferencesChanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
     loadPreferences();
+    initDiscordUpdatePresenceTimer();
 }
