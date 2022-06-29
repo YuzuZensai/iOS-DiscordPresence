@@ -11,9 +11,11 @@ This is my first jailbreak tweak <3, so it might not be perfect
 
 - [ ] Fetching the discord token (Somehow hooking the Discord app? No idea yet)
 
-## 🔧 Installation
+## 👜 Prerequisites
 
-Prerequisites: [Theos](https://theos.dev/)
+- [Theos](https://theos.dev/)
+
+## 🔧 Installation
 
 1. Clone this repository ``git clone https://github.com/YuzuZensai/iOS-DiscordPresence.git``
 2. Edit ``Makefile`` if needed
