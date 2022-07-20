@@ -112,8 +112,6 @@ static void updateDiscordPresence(id arg1, NSString *state) {
 
     requestAllowance += timePassed * (requestRate / requestPer);
     
-    NSLog(@"Request allowance: %f", requestAllowance);
-
     if(requestAllowance > requestRate)
         requestAllowance = requestRate;
 
@@ -277,8 +275,6 @@ static void loadPreferences()
     NSMutableDictionary *preferences = [[NSMutableDictionary alloc] initWithContentsOfFile: preferencesPath];
     if(preferences)
     {
-        NSLog(@"Updating preferences"); 
-
         isEnabled = ( [preferences objectForKey:@"isEnabled"] ? [[preferences objectForKey:@"isEnabled"] boolValue] : isEnabled );
         discordToken = ( [preferences objectForKey:@"discordToken"] ? [preferences objectForKey:@"discordToken"] : discordToken );
     }
