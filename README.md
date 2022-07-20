@@ -9,7 +9,7 @@ This is my first jailbreak tweak <3, so it might not be perfect
 
 ## ✨ Features
 
-- Detect running games and show them on your discord!
+- Detect running games and show them on your Discord!
 - Fetch Discord token from the iOS Discord Application
 - Built-in ratelimiter
 
