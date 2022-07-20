@@ -7,7 +7,7 @@ This is my first jailbreak tweak <3, so it might not be perfect
 ![Preview](https://user-images.githubusercontent.com/84713269/167249578-41f97c06-756c-4610-a94e-2a259a9171fb.gif)
 ![Preference](https://user-images.githubusercontent.com/84713269/179952103-1e851b56-14ce-4e48-8f51-ddb52aaf5d01.png)
 
-## ✨ Feature
+## ✨ Features
 
 - Detect running games and show them on your discord!
 - Fetch Discord token from the iOS Discord Application
@@ -19,7 +19,7 @@ This is my first jailbreak tweak <3, so it might not be perfect
 3. Respring
 4. Configure the tweak in the settings
 
-## 👜 Prerequisites
+## 👜 Prerequisite
 
 - [Theos](https://theos.dev/)
 
@@ -29,7 +29,7 @@ This is my first jailbreak tweak <3, so it might not be perfect
 2. Edit ``Makefile`` if needed
 3. Run ``make do`` to build and install on your device, ``make package`` to build, or ``make package FINALPACKAGE=1`` for production build
 
-## ⚠️ Disclaimer
+## ⚠️ Disclaimers
 
 Only tested on iOS 14.3, but it should work on other versions too
 
