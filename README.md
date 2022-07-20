@@ -9,16 +9,15 @@ This is my first jailbreak tweak <3, so it might not be perfect
 
 ## 📃 TODOs
 
-- [X] Make preference menu, and some basic settings
-- [X] Make the tweak send ``UPDATE`` request every x interval, to keep the status active
 - [ ] Fetching the discord token (Somehow hooking the Discord app? No idea yet)
-- [X] Make rate limits to prevent spamming the API
+
+## 👜 Prerequisites
+
+- [Theos](https://theos.dev/)
 
 ## 🔧 Installation
 
-Prerequisites: [Theos](https://theos.dev/)
-
-1. Clone this repository ``git clone https://github.com/YuzuZensai/iOS-DiscordPresence.git``
+1. Clone this repository
 2. Edit ``Makefile`` if needed
 3. Run ``make do`` to build and install on your device, or ``make package`` to build
 4. Get and put your Discord token in the tweak preference (Inside the settings app), and enable the tweak
