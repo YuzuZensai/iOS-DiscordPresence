@@ -7,6 +7,12 @@ This is my first jailbreak tweak <3, so it might not be perfect
 ![Preview](https://user-images.githubusercontent.com/84713269/167249578-41f97c06-756c-4610-a94e-2a259a9171fb.gif)
 ![Preference](https://user-images.githubusercontent.com/84713269/179952103-1e851b56-14ce-4e48-8f51-ddb52aaf5d01.png)
 
+## ✨ Feature
+
+- Detect running games and show them on your discord!
+- Fetch Discord token from the iOS Discord Application
+- Built-in ratelimiter
+
 ## 🔧 Installation
 1. Download .deb from [release](https://github.com/YuzuZensai/iOS-DiscordPresence/releases) page (for repo, soon?)
 2. Install the .deb file (Using your package manager, or Filza)
