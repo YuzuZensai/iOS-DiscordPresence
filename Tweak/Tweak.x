@@ -273,7 +273,7 @@ static void stopDiscordUpdatePresenceTimer() {
 
 static void loadPreferences()
 {
-    NSString *preferencesPath = @"/var/mobile/Library/Preferences/pink.kirameki.yuzu.iosdiscordpresencepreferences.plist";
+    NSString *preferencesPath = @"/var/mobile/Library/Preferences/cafe.kirameki.iosdiscordpresencepreferences.plist";
     NSMutableDictionary *preferences = [[NSMutableDictionary alloc] initWithContentsOfFile: preferencesPath];
     if(preferences)
     {
@@ -288,7 +288,7 @@ static void loadPreferences()
 {
     requestAllowance = requestRate;
     requestLastCheck = CACurrentMediaTime();
-    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPreferences, CFSTR("pink.kirameki.yuzu.iosdiscordpresencepreferences/PreferencesChanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPreferences, CFSTR("cafe.kirameki.iosdiscordpresencepreferences/PreferencesChanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
     loadPreferences();
     initDiscordUpdatePresenceTimer();
 }
