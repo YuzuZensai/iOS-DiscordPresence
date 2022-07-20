@@ -26,19 +26,19 @@
 			<key>default</key>
 			<false/>
 			<key>defaults</key>
-			<string>pink.kirameki.yuzu.iosdiscordpresencepreferences</string>
+			<string>cafe.kirameki.iosdiscordpresencepreferences</string>
 			<key>key</key>
 			<string>isEnabled</string>
 			<key>label</key>
 			<string>Enabled</string>
 			<key>PostNotification</key>
-			<string>pink.kirameki.yuzu.iosdiscordpresencepreferences/PreferencesChanged</string>
+			<string>cafe.kirameki.iosdiscordpresencepreferences/PreferencesChanged</string>
 		</dict>
 		<dict>
 			<key>cell</key>
 			<string>PSSecureEditTextCell</string>
 			<key>defaults</key>
-			<string>pink.kirameki.yuzu.iosdiscordpresencepreferences</string>
+			<string>cafe.kirameki.iosdiscordpresencepreferences</string>
 			<key>key</key>
 			<string>discordToken</string>
             <key>label</key>
@@ -46,7 +46,7 @@
 			<key>placeholder</key>
 			<string>Put your discord token here</string>
 			<key>PostNotification</key>
-			<string>pink.kirameki.yuzu.iosdiscordpresencepreferences/PreferencesChanged</string>
+			<string>cafe.kirameki.iosdiscordpresencepreferences/PreferencesChanged</string>
 		</dict>
 		<dict>
 			<key>cell</key>

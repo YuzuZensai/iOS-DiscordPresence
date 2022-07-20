@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>iOSDiscordPresencePreferences</string>
 	<key>CFBundleIdentifier</key>
-	<string>pink.kirameki.yuzu.iosdiscordpresencepreferences</string>
+	<string>cafe.kirameki.iosdiscordpresencepreferences</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>

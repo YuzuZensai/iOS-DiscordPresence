@@ -1,4 +1,4 @@
-Package: pink.kirameki.yuzu.iosdiscordpresence
+Package: cafe.kirameki.iosdiscordpresence
 Name: iOS-DiscordPresence
 Version: 0.0.1
 Architecture: iphoneos-arm
