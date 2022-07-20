@@ -50,6 +50,14 @@
 		</dict>
 		<dict>
 			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>Get Discord Token</string>
+			<key>action</key>
+			<string>getDiscordToken</string>
+		</dict>
+		<dict>
+			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Information</string>
@@ -58,7 +66,7 @@
 			<key>cell</key>
 			<string>PSButtonCell</string>
 			<key>label</key>
-			<string>GitHub</string>
+			<string>GitHub Repository</string>
 			<key>action</key>
 			<string>openGitHubLink</string>
 		</dict>
@@ -66,7 +74,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>YuzuZensai</string>
+			<string>Made with ❤️ by YuzuZensai</string>
 		</dict>
 	</array>
 	<key>title</key>
