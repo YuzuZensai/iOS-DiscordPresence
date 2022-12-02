@@ -21,7 +21,9 @@
 @end
 
 @interface SBApplicationInfo (Tweak)
-    @property (nonatomic,copy,readonly) NSArray * iTunesCategoriesOrderedByRelevancy;
+    @property(getter=isAppleApplication, nonatomic, readonly) BOOL appleApplication;
+    @property(getter=isInternalApplication, nonatomic, readonly) BOOL internalApplication;
+    @property(nonatomic, copy, readonly) NSArray *iTunesCategoriesOrderedByRelevancy;
 @end
 
 @interface SBLockScreenManager (Tweak)
