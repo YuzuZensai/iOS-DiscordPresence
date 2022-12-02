@@ -30,7 +30,27 @@ static void showDiscordRatelimitAlert() {
     });
 }
 
+static Boolean isiOS14orAbove() {
+    return [[UIDevice currentDevice].systemVersion floatValue] >= 14.0;
+}
+
+static Boolean isSBApplicationValid(SBApplication* app) {
+    SBApplicationInfo *appInfo = [app info];
+
+    if ([appInfo isAppleApplication] || [app isSystemApplication] || [appInfo isInternalApplication])
+        return false;
+
+    return true;
+}
+
 static Boolean isSBApplicationAGame(SBApplication* app) {
+
+    //TODO: Remove this temporary workaround
+    if (isiOS14orAbove() == false) {
+        NSLog(@"iOS 14 or above is required to detect games, skipping check");
+        return true;
+    }
+
     SBApplicationInfo *appInfo = [app info];
     NSArray *category = [appInfo iTunesCategoriesOrderedByRelevancy];
    
@@ -193,14 +213,14 @@ static void stopDiscordUpdatePresenceTimer() {
     else if ([arg1 isKindOfClass:[%c(SBApplication) class]]) {
         SBApplication *app = arg1;
 
-        Boolean isSystemApplication = [app isSystemApplication];
+        Boolean isValidApplication = isSBApplicationValid(app);
         Boolean isGameApplication = isSBApplicationAGame(app);
 
         // Switched to itself, ignore
         if (focusedApplication == app) return;
 
         // Ignore if the application is system application or is not a game
-        if(isSystemApplication || !isGameApplication) {
+        if(!isValidApplication || !isGameApplication) {
             // Remove any focused application, since the user switched to non game or system application
             if(focusedApplication != nil) {
                 // Remove current focused application and stop the presence
