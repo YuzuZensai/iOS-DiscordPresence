@@ -31,9 +31,9 @@ This is my first jailbreak tweak <3, so it might not be perfect
 
 ## ⚠️ Disclaimers
 
-Supports only iOS 14+ for now
+Fully support on iOS 14+, iOS 12+ (Temporary workaround), untested on lower versions
 
-Only tested on iOS 14.3 (unc0ver) and 14.5 (checkra1n), but it should work on other versions too
+Only tested on iOS 14.3 (unc0ver), 14.5 (checkra1n), and 12.5.6 (Chimera) but it should work on other versions too
 
 iOS-DiscordPresence utilizes Discord API that is outside OAuth2/bot API scope.
 
